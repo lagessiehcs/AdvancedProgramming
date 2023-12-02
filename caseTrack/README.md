@@ -1,15 +1,18 @@
-# caseTrack: A pandemic cases visualizer
+# caseTrack: A pandemic cases tracker
 
-Version 0.2.0.
+Version 0.3.0.
 
 caseTrack processes data related to a global pandemic.
 
 ## Building
 
-Build the code from your terminal using:
+From the base directory (containing `src/` and `data/`), run:
 
 ```shell
-g++ -o caseTrack caseTrack.cpp
+mkdir build
+cd build
+cmake ../src/
+make
 ```
 
 ## Running
@@ -32,12 +35,3 @@ Algeria: 298 305 283 240 197 172 156 149 140 127 119 117 121 116 112 109 112 109
 
 Andorra: 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 1 0 0 0 0 0 0 0 1 7 79 1 0 
 ```
-
-## Features
-
-caseTrack can:
-
-- Generate dummy data for testing purposes
-- Read real data from a CSV file
-- Print data per country for multiple data
-- Compute normalized data per capita
