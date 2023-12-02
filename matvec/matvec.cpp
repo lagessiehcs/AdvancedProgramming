@@ -1,115 +1,36 @@
 #include <cassert>
+#include <Eigen/Dense>
 #include <iostream>
-#include <vector>
-
-template <typename T>
-void print_vector(const std::vector<T>& vec, bool print_vector_header = true) {
-  /*
-   * Print vectors with elements of type T. Note
-   * that this only works for objects of type
-   * T for which "std::cout << object" would work.
-   */
-
-  if (print_vector_header) {
-    std::cout << "Vector of size " << vec.size() << "\n";
-  }
-
-  std::cout << "[ ";
-  // for each element in vector
-  for (const auto& elem : vec) {
-    std::cout << elem << " ";
-  }
-  std::cout << " ]\n";
-}
-
-template <typename T>
-void print_matrix(const std::vector<std::vector<T>>& matrix) {
-
-  std::cout << matrix.size() << " x " << matrix.at(0).size() << " Matrix: " << '\n';
-  // for each row in matrix
-  for (const auto& row : matrix) {
-    print_vector(row, false);
-  }
-}
-
-std::vector<double> operator+(const std::vector<double>& vec_a, const std::vector<double>& vec_b) {
-  /*
-   * Overload operator+ to allow addition of two double vectors
-   * of the same size. The return value is another vector formed by
-   * adding the corresponding elements of vec_a and vec_b.
-   */
-
-  assert(vec_a.size() == vec_b.size());
-
-  std::vector<double> vec_sum(vec_a.size(), 0.0);
-
-  for (auto i = 0u; i < vec_a.size(); i++) {
-    vec_sum[i] = vec_a[i] + vec_b[i];
-  }
-  return vec_sum;
-}
-
-std::vector<double> operator*(const std::vector<std::vector<double>>& matrix, const std::vector<double>& vec) {
-  /*
-   * Overload of operator* for matrix vector multiplication
-   * where a matrix is a vector of vector of doubles:
-   * std::vector<std::vector<double>>
-   * and vector is std::vector<double>
-   */
-  auto N = vec.size();
-  assert(N == matrix.at(0).size());
-  std::vector<double> res(N, 0.0);
-
-  for (auto i = 0u; i < N; i++) {
-    for (auto j = 0u; j < N; j++) {
-      res[i] += vec[j] * matrix[i][j];
-    }
-  }
-  return res;
-}
-
-bool test_matrix_vector_product() {
-  /*
-   * Test implementation of operator* for Matrix-vector product.
-   */
-  bool tests_passed = true;
-
-  std::vector<std::vector<double>> matrix = {{1., 2.}, {3., 4.}};
-  std::vector<double> vec = {1., 1.};
-
-  std::vector<double> mat_vec = matrix * vec;
-
-  std::vector<double> reference = {3., 7.};
-
-  double tol = 1e-8;
-  for (auto i = 0u; i < reference.size(); i++) {
-    // floating point values are "equal" if their
-    // difference is small
-    if (std::abs(reference.at(i) - mat_vec.at(i)) > tol) {
-      tests_passed = false;
-    }
-  }
-  if (tests_passed) {
-    std::cout << "Tests passed!\n";
-  } else {
-    std::cout << "Tests failed \n";
-    std::cout << "Reference: ";
-    print_vector(reference, false);
-    std::cout << "Computed: ";
-    print_vector(mat_vec, false);
-  }
-  return tests_passed;
-}
 
 int main() {
-  std::vector<std::vector<double>> matrix = {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}};
+  // Here we define a matrix of arbitrary (X for any size)
+  // size which we initialize to size 3x3. The "d" means "double"
+  // (see also "f" for float, "i" for int, etc)
+  Eigen::MatrixXd matrix(3, 3);
 
-  std::vector<double> vec_a = {1., 2., 3.};
-  std::vector<double> vec_b = {4., 5., 6.};
+  // We can give values to Eigen matrices using streams
+  // (how cool is that?)
+  matrix << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 
-  // adding two vectors
+  // ...and we can also print them as a stream
+  std::cout << "Matrix: \n" << matrix << std::endl;
+
+  // Eigen also gives us some matrix and vector types
+  // of fixed size, for performance reasons.
+  // Here vec_a is a vector of 3 doubles.
+  Eigen::Vector3d vec_a;
+  vec_a << 1, 2, 3;
+  std::cout << "vec_a: \n" << vec_a << std::endl;
+
+  Eigen::Vector3d vec_b;
+  vec_b << 4, 5, 6;
+  std::cout << "vec_b: \n" << vec_b << std::endl;
+
+  // Casually adding two vectors
   auto vec_sum = vec_a + vec_b;
-  print_vector(vec_sum);
+  std::cout << "vec_sum: \n" << vec_sum << std::endl;
 
-  test_matrix_vector_product();
+  // Casually multiplying matrix * vector
+  auto mat_vec = matrix * vec_a;
+  std::cout << "mat_vec\n" << mat_vec << std::endl;
 }
