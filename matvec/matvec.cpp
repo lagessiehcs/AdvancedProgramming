@@ -68,6 +68,36 @@ std::vector<double> operator*(const std::vector<std::vector<double>>& matrix, co
   return res;
 }
 
+void mat_times_vec(
+    double* matrix, size_t matrix_rows, size_t matrix_columns, double* vec, size_t vec_size, double* res) {
+  /*
+   * C/old-C++ way of multiplying matrix * vector.
+   * We need to also pass the sizes of each
+   */
+  assert(matrix_columns == vec_size);
+  // By the way, C only has malloc instead of new.
+
+  for (size_t i = 0; i < matrix_rows; i++) {
+    res[i] = 0;
+    for (size_t j = 0; j < matrix_columns; j++) {
+      res[i] += vec[j] * matrix[i * matrix_columns + j];
+    }
+  }
+}
+
+double* mat_times_vec(double* matrix, size_t matrix_rows, size_t matrix_columns, double* vec, size_t vec_size) {
+  /*
+   * C/old-C++ way of multiplying matrix * vector.
+   * We need to also pass the sizes of each
+   */
+  assert(matrix_columns == vec_size);
+  double* res = new double[matrix_rows];
+
+  // To avoid duplication, we can reuse the alternative version of mat_times_vec
+  mat_times_vec(matrix, matrix_rows, matrix_columns, vec, vec_size, res);
+  return res;
+}
+
 bool test_matrix_vector_product() {
   /*
    * Test implementation of operator* for Matrix-vector product.
@@ -79,25 +109,57 @@ bool test_matrix_vector_product() {
 
   std::vector<double> mat_vec = matrix * vec;
 
+  // Alternative implementation with raw pointers.
+  // matrix_raw is a pointer to an 1D array of 2x2 elements
+  // vec_raw    is a pointer to an 1D array of 2   elements
+  // res_raw    is a pointer without destination at the moment
+  double* matrix_raw = new double[2 * 2];
+  double* vec_raw = new double[2];
+  double* res_raw;
+
+  // TInitialize matrix_raw and vec_raw with values
+  matrix_raw[0] = 1;
+  matrix_raw[1] = 2;
+  matrix_raw[2] = 3;
+  matrix_raw[3] = 4;
+  vec_raw[0] = 1;
+  vec_raw[1] = 1;
+
+  // Compute matrix-vector product using mat_times_vec(...)
+  res_raw = mat_times_vec(matrix_raw, 2, 2, vec_raw, 2);
+
   std::vector<double> reference = {3., 7.};
 
   double tol = 1e-8;
   for (auto i = 0u; i < reference.size(); i++) {
     // floating point values are "equal" if their
     // difference is small
-    if (std::abs(reference.at(i) - mat_vec.at(i)) > tol) {
+    if ((reference.at(i) - mat_vec.at(i)) > tol) {
       tests_passed = false;
     }
   }
+  for (auto i = 0; i < 2; i++) {
+    if ((reference.at(i) - res_raw[i]) > tol) {
+      tests_passed = false;
+    }
+  }
+
   if (tests_passed) {
     std::cout << "Tests passed!\n";
   } else {
     std::cout << "Tests failed \n";
     std::cout << "Reference: ";
     print_vector(reference, false);
-    std::cout << "Computed: ";
+    std::cout << "Computed (operator*): ";
     print_vector(mat_vec, false);
+    std::cout << "Computed (mat_times_vec()): ";
+    std::cout << res_raw[0] << " " << res_raw[1] << std::endl;
   }
+
+  // TODO: Delete all memory allocated with new
+  delete[] matrix_raw;
+  delete[] vec_raw;
+
   return tests_passed;
 }
 

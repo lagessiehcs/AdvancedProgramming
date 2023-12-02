@@ -1,6 +1,6 @@
 # matvec: Fun with matrices
 
-Version 0.2.0.
+Version 0.3.0.
 
 This is a fancy calculator for matrices. We will be building it up over the following weeks.
 
