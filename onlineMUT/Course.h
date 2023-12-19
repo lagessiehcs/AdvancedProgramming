@@ -3,17 +3,20 @@
 
 #include <string>
 
-enum class CourseType { Lecture, Seminar, Practical };
-
 class Course {
-private:
+protected:
   std::string _id;
-  CourseType _type;
 
 public:
-  Course(std::string, CourseType);
+  Course(std::string);
 
   std::string id() const;
+
+  virtual std::string type() const = 0;
+
+  virtual void describe() const = 0;
+
+  virtual ~Course() = default;
 };
 
 #endif // COURSE_Η

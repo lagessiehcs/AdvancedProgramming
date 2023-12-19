@@ -2,6 +2,8 @@
 #define STUDENT_H
 
 #include "Course.h"
+#include "Curriculum.h"
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -9,14 +11,21 @@ class Student {
 private:
   std::string _name;
   const std::string _registration_num;
-  std::vector<Course> _courses;
+
+  // Every student has study program, but these exist already.
+  // It is not the student that decides when they are
+  // constructed and destructed.
+  // (alternative: std::experimental::observer_ptr)
+  const Curriculum* _study_program;
+
+  std::vector<std::shared_ptr<const Course>> _courses;
 
   friend class StudentCard;
 
 public:
-  Student(std::string, std::string);
+  Student(std::string, std::string, const std::unique_ptr<Curriculum>&);
 
-  void register_for(Course);
+  void register_for(std::string id);
 
   void list_courses() const;
 };

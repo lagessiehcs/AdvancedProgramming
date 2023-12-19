@@ -1,5 +1,5 @@
 #ifndef STUDENTCARD_H
-#define STUDENTCARD_Η
+#define STUDENTCARD_H
 
 #include <iostream>
 #include <string>

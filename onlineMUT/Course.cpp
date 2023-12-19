@@ -1,8 +1,8 @@
 #include "Course.h"
 #include <iostream>
 
-Course::Course(std::string id, CourseType type)
-    : _id(id), _type(type) {
+Course::Course(std::string id)
+    : _id(id) {
   std::cout << "Constructing the course " << _id << std::endl;
 }
 
